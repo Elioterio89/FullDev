@@ -23,3 +23,4 @@ C:\Users\eslei\OneDrive\Documentos\DEV\Full\FullDev\EstudoFull\EstudoFull\obj\De
 C:\Users\eslei\OneDrive\Documentos\DEV\Full\FullDev\EstudoFull\EstudoFull\obj\Debug\net8.0\EstudoFull.pdb
 C:\Users\eslei\OneDrive\Documentos\DEV\Full\FullDev\EstudoFull\EstudoFull\obj\Debug\net8.0\EstudoFull.genruntimeconfig.cache
 C:\Users\eslei\OneDrive\Documentos\DEV\Full\FullDev\EstudoFull\EstudoFull\obj\Debug\net8.0\ref\EstudoFull.dll
+C:\Users\eslei\OneDrive\Documentos\DEV\Full\FullDev\EstudoFull\EstudoFull\obj\Debug\net8.0\EstudoFull.sourcelink.json
