@@ -1,100 +1,93 @@
 ﻿using EstudoFull.Models;
+using EstudoFull.Models.Context;
 using EstudoFull.Services.Interfaces;
+using System.Security.Cryptography;
 
 namespace EstudoFull.Services
 {
+
     public class PessoaService : IPessoaService
     {
-        public Pessoa Atualizar(Pessoa pPessoa)
+        private MySQLContext _mySqlContext;
+        public PessoaService(MySQLContext mySQLContext)
         {
+            _mySqlContext = mySQLContext;
+        }
+      
+        public Pessoa Criar(Pessoa pPessoa)
+        {
+            try
+            {
+                _mySqlContext.Add(pPessoa);
+                _mySqlContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
             return pPessoa;
         }
+        public List<Pessoa> Listar()
+        {
 
+            return _mySqlContext.Pessoas.ToList();
+        }
         public Pessoa BuscarPorId(long pId)
         {
-            return new Pessoa
-            {
-                Id = 1,
-                Endereco = "Morro do gato",
-                Genero = "Feminino",
-                PrimeiroNome = "Tania",
-                Sobrenome = "Lima"
-            };
+            return _mySqlContext.Pessoas.FirstOrDefault(p=>p.Id.Equals(pId));
         }
 
         public Pessoa BuscarPorNome(string pNome)
         {
-            return new Pessoa
-            {
-                Id = 2,
-                Endereco = "Simoes Filho",
-                Genero = "Feminino",
-                PrimeiroNome = "Eliene",
-                Sobrenome = "Soares"
-            };
+            return _mySqlContext.Pessoas.FirstOrDefault(p => p.PrimeiroNome.Equals(pNome));
         }
 
-        public Pessoa Criar(Pessoa pPessoa)
+        public Pessoa Atualizar(Pessoa pPessoa)
         {
-            return pPessoa;
+            var oPessoa = BuscarPorId(pPessoa.Id);
+            if (oPessoa != null)
+            {
+                try
+                {
+                    _mySqlContext.Entry(oPessoa).CurrentValues.SetValues(pPessoa);
+                    _mySqlContext.SaveChanges();
+
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                return pPessoa;
+            }
+            else
+            {
+                return Criar(pPessoa);
+            }
+
         }
 
         public bool Deletar(long pId)
         {
-            return true;
-        }
-
-        public List<Pessoa> Listar()
-        {
-            List<Pessoa> lPessoas = new List<Pessoa>();
-            for (int i=0;i<5;i++)
+            var oPessoa = BuscarPorId(pId);
+            if (oPessoa != null)
             {
-                Pessoa oPessoa = MockPessoa(i);
-                lPessoas.Add(oPessoa);
-            }
-            return lPessoas;
-        }
-
-        private Pessoa MockPessoa(int pIndex)
-        {
-            List<Pessoa> lPessoas = new List<Pessoa>
-            {
-                new Pessoa
+                try
                 {
-                    Id = 1,
-                    Endereco = "Morro do gato",
-                    Genero = "Feminino",
-                    PrimeiroNome = "Tania",
-                    Sobrenome = "Lima"
-                },
-                new Pessoa
+                    _mySqlContext.Remove(oPessoa);
+                    var teste =  _mySqlContext.SaveChanges();
+                    return true;
+                }
+                catch(Exception ex)
                 {
-                    Id = 2,
-                    Endereco = "Simoes Filho",
-                    Genero = "Feminino",
-                    PrimeiroNome = "Eliene",
-                    Sobrenome = "Soares"
-                },
-                new Pessoa
-                {
-                    Id = 3,
-                    Endereco = "Mais um endereço",
-                    Genero = "Feminino",
-                    PrimeiroNome = "Ana",
-                    Sobrenome = "Santos"
-                },
-                new Pessoa
-                {
-                    Id = 4,
-                    Endereco = "Endereço diferente",
-                    Genero = "Masculino",
-                    PrimeiroNome = "João",
-                    Sobrenome = "Pereira"
+                    throw new Exception(ex.Message);
                 }
 
-            };
-
-            return lPessoas.Where(x => x.Id == pIndex).FirstOrDefault();
+            }
+            return false;
         }
+
+ 
+
     }
 }

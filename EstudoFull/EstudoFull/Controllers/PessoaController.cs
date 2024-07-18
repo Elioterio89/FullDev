@@ -68,7 +68,7 @@ namespace EstudoFull.Controllers
             return Ok(_pessoaService.Atualizar(pPessoa));
         }
 
-        [HttpDelete]
+        [HttpDelete("{pId}")]
 
         public IActionResult Delete(long pId)
         {
