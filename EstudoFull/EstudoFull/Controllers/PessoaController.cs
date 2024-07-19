@@ -1,3 +1,5 @@
+using Asp.Versioning;
+using EstudoFull.Data.Dto;
 using EstudoFull.Models;
 using EstudoFull.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +8,8 @@ using System.Security.Cryptography;
 namespace EstudoFull.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [ApiVersion("1")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public class PessoaController : ControllerBase
     {
 
@@ -49,7 +52,7 @@ namespace EstudoFull.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Pessoa pPessoa)
+        public IActionResult Post([FromBody] PessoaDto pPessoa)
         {
             if (pPessoa == null)
             {
@@ -59,7 +62,7 @@ namespace EstudoFull.Controllers
         }
 
         [HttpPut]
-        public IActionResult Put([FromBody] Pessoa pPessoa)
+        public IActionResult Put([FromBody] PessoaDto pPessoa)
         {
             if (pPessoa == null)
             {

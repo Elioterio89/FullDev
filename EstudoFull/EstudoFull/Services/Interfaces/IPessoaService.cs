@@ -1,16 +1,16 @@
-﻿using EstudoFull.Models;
+﻿using EstudoFull.Data.Dto;
+using EstudoFull.Models;
 
 namespace EstudoFull.Services.Interfaces
 {
-    public interface IPessoaService
+    public interface IPessoaService 
     {
-        Pessoa Criar(Pessoa pPessoa);
-        Pessoa BuscarPorId(long pId);
-        Pessoa BuscarPorNome(string pNome);
-        List<Pessoa> Listar();
-        Pessoa Atualizar (Pessoa pPessoa);
+        PessoaDto BuscarPorNome(string pNome);
+        PessoaDto Criar(PessoaDto pPessoa);
+        List<PessoaDto> Listar();
+        PessoaDto BuscarPorId(long pId);
+        PessoaDto Atualizar(PessoaDto pPessoa);
         bool Deletar(long pId);
-
 
     }
 }

@@ -1,93 +1,55 @@
-﻿using EstudoFull.Models;
+﻿using EstudoFull.Data.Converter.Implementations;
+using EstudoFull.Data.Dto;
+using EstudoFull.Models;
 using EstudoFull.Models.Context;
+using EstudoFull.Repository.Interfaces;
 using EstudoFull.Services.Interfaces;
+using System;
 using System.Security.Cryptography;
 
 namespace EstudoFull.Services
 {
 
     public class PessoaService : IPessoaService
-    {
-        private MySQLContext _mySqlContext;
-        public PessoaService(MySQLContext mySQLContext)
+    {      
+        private readonly IPessoaRepository _pessoaRepository;
+        private readonly PessoaParse _parse;
+        public PessoaService(IPessoaRepository pessoaRepository)
         {
-            _mySqlContext = mySQLContext;
-        }
-      
-        public Pessoa Criar(Pessoa pPessoa)
-        {
-            try
-            {
-                _mySqlContext.Add(pPessoa);
-                _mySqlContext.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-
-            return pPessoa;
-        }
-        public List<Pessoa> Listar()
-        {
-
-            return _mySqlContext.Pessoas.ToList();
-        }
-        public Pessoa BuscarPorId(long pId)
-        {
-            return _mySqlContext.Pessoas.FirstOrDefault(p=>p.Id.Equals(pId));
+            _pessoaRepository = pessoaRepository;
+            _parse = new PessoaParse();          
         }
 
-        public Pessoa BuscarPorNome(string pNome)
+        public PessoaDto Criar(PessoaDto pPessoa)
         {
-            return _mySqlContext.Pessoas.FirstOrDefault(p => p.PrimeiroNome.Equals(pNome));
+            var oPessoa = _parse.ParseDtoToEnt(pPessoa);
+            oPessoa = _pessoaRepository.Criar(oPessoa);
+            return _parse.ParseEntToDto(oPessoa);           
+        }
+        public List<PessoaDto> Listar()
+        {
+            return _parse.ListParseEntToDt( _pessoaRepository.Listar());
+        }
+        public PessoaDto BuscarPorId(long pId)
+        {
+            return _parse.ParseEntToDto( _pessoaRepository.BuscarPorId(pId));
         }
 
-        public Pessoa Atualizar(Pessoa pPessoa)
+        public PessoaDto BuscarPorNome(string pNome)
         {
-            var oPessoa = BuscarPorId(pPessoa.Id);
-            if (oPessoa != null)
-            {
-                try
-                {
-                    _mySqlContext.Entry(oPessoa).CurrentValues.SetValues(pPessoa);
-                    _mySqlContext.SaveChanges();
+            return _parse.ParseEntToDto( _pessoaRepository.BuscarPorNome(pNome));
+        }
 
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                return pPessoa;
-            }
-            else
-            {
-                return Criar(pPessoa);
-            }
-
+        public PessoaDto Atualizar(PessoaDto pPessoa)
+        {
+            var oPessoa = _parse.ParseDtoToEnt(pPessoa);
+            oPessoa = _pessoaRepository.Atualizar(oPessoa);
+            return _parse.ParseEntToDto(oPessoa);
         }
 
         public bool Deletar(long pId)
         {
-            var oPessoa = BuscarPorId(pId);
-            if (oPessoa != null)
-            {
-                try
-                {
-                    _mySqlContext.Remove(oPessoa);
-                    var teste =  _mySqlContext.SaveChanges();
-                    return true;
-                }
-                catch(Exception ex)
-                {
-                    throw new Exception(ex.Message);
-                }
-
-            }
-            return false;
+            return _pessoaRepository.Deletar(pId);
         }
-
- 
-
     }
 }

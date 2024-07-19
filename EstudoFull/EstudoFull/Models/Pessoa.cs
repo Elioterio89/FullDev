@@ -3,11 +3,9 @@
 namespace EstudoFull.Models
 {
     [Table("Pessoa")]
-    public class Pessoa
+    public class Pessoa : Base
     {
-        [Column("Id")]
-        public long Id { get; set; }
-
+        
         [Column("PrimeiroNome")]
         public string PrimeiroNome { get; set; }
 
