@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using EstudoFull.Data.Dto;
+using EstudoFull.Hypermedia.Filters;
 using EstudoFull.Models;
 using EstudoFull.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace EstudoFull.Controllers
 {
     [ApiController]
     [ApiVersion("1")]
-    [Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/[controller]/v{version:apiVersion}")]
     public class PessoaController : ControllerBase
     {
 
@@ -23,6 +24,7 @@ namespace EstudoFull.Controllers
         }
 
         [HttpGet]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult GetAll()
         {
 
@@ -30,6 +32,7 @@ namespace EstudoFull.Controllers
         }
 
         [HttpGet("id/{pId}")]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult GetPorId(long pId)
         {
             var oPessoa = _pessoaService.BuscarPorId(pId);
@@ -40,7 +43,9 @@ namespace EstudoFull.Controllers
 
             return Ok(oPessoa);
         }
+
         [HttpGet("nome/{pNome}")]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult GetPorNome(string pNome)
         {
             var oPessoa = _pessoaService.BuscarPorNome(pNome);
@@ -52,6 +57,7 @@ namespace EstudoFull.Controllers
         }
 
         [HttpPost]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Post([FromBody] PessoaDto pPessoa)
         {
             if (pPessoa == null)
@@ -62,6 +68,7 @@ namespace EstudoFull.Controllers
         }
 
         [HttpPut]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Put([FromBody] PessoaDto pPessoa)
         {
             if (pPessoa == null)
@@ -72,7 +79,6 @@ namespace EstudoFull.Controllers
         }
 
         [HttpDelete("{pId}")]
-
         public IActionResult Delete(long pId)
         {
             var vDelete = _pessoaService.Deletar(pId);

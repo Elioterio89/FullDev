@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using EstudoFull.Hypermedia;
+using EstudoFull.Hypermedia.Abstract;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace EstudoFull.Data.Dto
 {
-    public class PessoaDto
+    public class PessoaDto : ISupportsHyperMedia
     {
 
         [JsonPropertyName("id")]
@@ -20,5 +22,6 @@ namespace EstudoFull.Data.Dto
 
         [JsonPropertyName("sexo")]
         public string Genero { get; set; }
+        public List<HyperMediaLink> Links { get; set; } =  new List<HyperMediaLink>();
     }
 }

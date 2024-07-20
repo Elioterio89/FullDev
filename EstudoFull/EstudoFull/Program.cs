@@ -1,10 +1,15 @@
+using EstudoFull.Hypermedia.Enricher;
+using EstudoFull.Hypermedia.Filters;
 using EstudoFull.Models.Context;
 using EstudoFull.Repository;
 using EstudoFull.Repository.Interfaces;
 using EstudoFull.Services;
 using EstudoFull.Services.Interfaces;
 using EvolveDb;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using MySqlConnector;
 using Serilog;
 
@@ -27,6 +32,23 @@ if(builder.Environment.IsDevelopment())
 }
 builder.Services.AddApiVersioning();
 
+builder.Services.AddMvc(options =>
+{
+    options.RespectBrowserAcceptHeader = true;
+    options.FormatterMappings.SetMediaTypeMappingForFormat("xml", MediaTypeHeaderValue.Parse("application/xml"));
+    options.FormatterMappings.SetMediaTypeMappingForFormat("json", MediaTypeHeaderValue.Parse("application/json"));
+}).AddXmlSerializerFormatters();
+
+var filterOptions = new HyperMediaFilterOptions();
+filterOptions.ContentResponseEnricherList.Add(new PessoaEnricher());
+filterOptions.ContentResponseEnricherList.Add(new LivroEnricher());
+
+builder.Services.AddSingleton(filterOptions);
+
+builder.Services.AddApiVersioning();
+
+
+
 //injecao de dependencias
 builder.Services.AddScoped<IPessoaService, PessoaService>();
 builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
@@ -45,6 +67,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapControllerRoute("DefaultApi", "{controller=values}/v{version=apiVersion}/{id?}");
 
 app.Run();
 

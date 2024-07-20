@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using EstudoFull.Data.Dto;
+using EstudoFull.Hypermedia.Filters;
 using EstudoFull.Models;
 using EstudoFull.Services;
 using EstudoFull.Services.Interfaces;
@@ -9,7 +10,7 @@ namespace EstudoFull.Controllers
 {
     [ApiController]
     [ApiVersion("1")]
-    [Route("api/v{version:apiVersion}/[controller]")]
+    [Route("api/[controller]/v{version:apiVersion}")]
     public class LivroController : ControllerBase
     {
         private readonly ILogger<LivroController> _logger;
@@ -23,12 +24,14 @@ namespace EstudoFull.Controllers
 
 
         [HttpGet]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult GetAll()
         {
             return Ok(_livroService.Listar());
         }
 
         [HttpGet("id/{pId}")]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult GetPorId(long pId)
         {
             var oLivro = _livroService.BuscarPorId(pId);
@@ -41,6 +44,7 @@ namespace EstudoFull.Controllers
         }
 
         [HttpGet("titulo/{pTitulo}")]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult GetPorTitulo(string pTitulo)
         {
             var oLivro = _livroService.BuscarPorTitulo(pTitulo);
@@ -52,6 +56,7 @@ namespace EstudoFull.Controllers
         }
 
         [HttpPost]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Post([FromBody] LivroDto pLivro)
         {
             if (pLivro == null)
@@ -62,6 +67,7 @@ namespace EstudoFull.Controllers
         }
 
         [HttpPut]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Put([FromBody] LivroDto pLivro)
         {
             if (pLivro == null)
