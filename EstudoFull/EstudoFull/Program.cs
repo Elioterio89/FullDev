@@ -7,20 +7,49 @@ using EstudoFull.Services;
 using EstudoFull.Services.Interfaces;
 using EvolveDb;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
 using MySqlConnector;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+var appName = "Estudo full ";
+var appVersion = "v1";
+var appDescription = $"Estudo full api '{appName}'";
 
 // Add services to the container.
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
+builder.Services.AddCors(options => options.AddDefaultPolicy(builder =>
+{
+    builder.AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader();
+}));
 
 builder.Services.AddControllers();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c => {
+    c.SwaggerDoc(appVersion,
+        new OpenApiInfo
+        {
+            Title = appName,
+            Version = appVersion,
+            Description = appDescription,
+            Contact = new OpenApiContact
+            {
+                Name = "Leandro Costa",
+                Url = new Uri("https://pub.erudio.com.br/meus-cursos")
+            }
+        });
+});
 
-    var conn =  builder.Configuration["MySQLConnection:MySQLConString"];
+
+var conn =  builder.Configuration["MySQLConnection:MySQLConString"];
     builder.Services.AddDbContext<MySQLContext>(options => options.UseMySql(
         conn,
         new MySqlServerVersion(new Version(8,0,29)))
@@ -48,7 +77,6 @@ builder.Services.AddSingleton(filterOptions);
 builder.Services.AddApiVersioning();
 
 
-
 //injecao de dependencias
 builder.Services.AddScoped<IPessoaService, PessoaService>();
 builder.Services.AddScoped<IPessoaRepository, PessoaRepository>();
@@ -63,6 +91,17 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
+
+app.UseCors();
+
+app.UseSwagger();
+
+app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{appName} - {appVersion}"); });
+
+var option = new RewriteOptions();
+option.AddRedirect("^$", "swagger");
+app.UseRewriter(option);
+
 
 app.UseAuthorization();
 
